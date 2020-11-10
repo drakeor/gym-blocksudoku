@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name='gym-blocksudoku-drakeor',
+    name='gym-blocksudoku',
     version='0.0.1',
     author="Drakeor",
     author_email="me@drakeor.com",
