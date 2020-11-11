@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name='gym-blocksudoku',
-    version='0.0.1',
+    version='0.0.2',
     author="Drakeor",
     author_email="me@drakeor.com",
     description="OpenAI Gym Environment for Block Sudoku",

@@ -1,7 +1,10 @@
 README.md
 setup.py
+gym_blocksudoku/__init__.py
 gym_blocksudoku.egg-info/PKG-INFO
 gym_blocksudoku.egg-info/SOURCES.txt
 gym_blocksudoku.egg-info/dependency_links.txt
 gym_blocksudoku.egg-info/requires.txt
 gym_blocksudoku.egg-info/top_level.txt
+gym_blocksudoku/envs/__init__.py
+gym_blocksudoku/envs/blocksudoku_env.py

@@ -1,11 +1,14 @@
 import gym
 import numpy as np
+import math
 
 import random
 import itertools
 
 from gym import error, spaces, utils
 from gym.utils import seeding
+
+from gym import spaces
 
 class BlockSudoku(gym.Env):
     metadata = {'render.modes': ['human']}
@@ -23,33 +26,48 @@ class BlockSudoku(gym.Env):
         self.is_running = True
         self.total_score = 0
 
+        # action space
+        self.action_space = spaces.Discrete(3*9*9)  
+
+        # observation space
+        self.observation_space = spaces.Box(
+            low=0, high=1, shape=(15, 15), dtype=np.uint8
+        )
 
     # Returns state, reward, done, and {}
     def step(self, action):
+        err_msg = "%r (%s) invalid" % (action, type(action))
+        assert self.action_space.contains(action), err_msg
+
         reward = 0
         done = not self.is_running
         state = self.game.get_state(self.block_queue, self.main_board)
 
         # Extra sanity check
         if done:
-            print('Game is already finished! Please call reset() to restart');
+            print('Game is already finished! Please call reset() to restart')
             return state, 0, done, {}
 
         # Sanity check
-        if(action.shape[0] != 3 and action.shape[1] != 9):
-            print("Invalid dimensions for action! Expected 3x9 array.")
-            return None
+        #if(action.shape[0] != 3 and action.shape[1] != 9):
+        #    print("Invalid dimensions for action! Expected 3x9 array.")
+        #    return None
 
         # Translate to block and board position
-        action_input = np.argmax(action, axis=1)
-        queue_pos = action_input[0]
+        #action_input = np.argmax(action, axis=1)
+        #queue_pos = action_input[0]
+        queue_pos = math.floor(action / 81)
+        rem = action - (queue_pos * 81)
+        x_pos = math.floor(rem / 9)
+        y_pos = rem - (x_pos*9)
+        print('action is ' + str(action) + ' which means queue_pos = ' + str(queue_pos) + ' x = ' + str(x_pos) + ' y = ' + str(y_pos))
+
+
         # Make sure we have that block in queue or punish the user.
         if(queue_pos >= len(self.block_queue)):
             return state, -1, done, {}
 
         selected_block = self.block_queue[queue_pos]
-        x_pos = action_input[1]
-        y_pos = action_input[2]
 
         # Make sure we can make that move or punish the user
         if(not self.game.check_if_valid_move(x_pos, y_pos, selected_block, self.main_board)):
