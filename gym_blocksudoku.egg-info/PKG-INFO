@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: gym-blocksudoku
-Version: 0.0.1
+Version: 0.0.2
 Summary: OpenAI Gym Environment for Block Sudoku
 Home-page: https://github.com/drakeor/gym-blocksudoku
 Author: Drakeor

@@ -60,7 +60,7 @@ class BlockSudoku(gym.Env):
         rem = action - (queue_pos * 81)
         x_pos = math.floor(rem / 9)
         y_pos = rem - (x_pos*9)
-        print('action is ' + str(action) + ' which means queue_pos = ' + str(queue_pos) + ' x = ' + str(x_pos) + ' y = ' + str(y_pos))
+        #print('action is ' + str(action) + ' which means queue_pos = ' + str(queue_pos) + ' x = ' + str(x_pos) + ' y = ' + str(y_pos))
 
 
         # Make sure we have that block in queue or punish the user.
@@ -113,7 +113,7 @@ class BlockSudoku(gym.Env):
         return self.game.get_state(self.block_queue, self.main_board)
 
     # Returns self.view.render()?
-    def render(self, mode='human'):
+    def render(self, mode='none'):
         if(mode == 'human'):
             print ('------------')
             print( 'Score: ' + str(self.total_score))
