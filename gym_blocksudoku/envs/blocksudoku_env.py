@@ -26,6 +26,9 @@ class BlockSudoku(gym.Env):
         self.is_running = True
         self.total_score = 0
 
+        self.current_steps = 0
+        self.max_steps = 2000
+
         # action space
         self.action_space = spaces.Discrete(3*9*9)  
 
@@ -42,6 +45,10 @@ class BlockSudoku(gym.Env):
         reward = 0
         done = not self.is_running
         state = self.game.get_state(self.block_queue, self.main_board)
+        
+        if(self.current_steps >= self.max_steps):
+            self.is_running = False
+            return state, 0, True, {}
 
         # Extra sanity check
         if done:
@@ -109,6 +116,9 @@ class BlockSudoku(gym.Env):
         # reset total score
         self.total_score = 0
         self.is_running = True
+
+        self.current_steps = 0
+        self.max_steps = 2000
 
         return self.game.get_state(self.block_queue, self.main_board)
 
