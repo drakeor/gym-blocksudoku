@@ -34,7 +34,7 @@ class BlockSudoku(gym.Env):
 
         # observation space
         self.observation_space = spaces.Box(
-            low=0, high=1, shape=(15, 15), dtype=np.uint8
+            low=0, high=1, shape=(15, 15, 1), dtype=np.uint8
         )
 
     # Returns state, reward, done, and {}
@@ -45,7 +45,8 @@ class BlockSudoku(gym.Env):
         reward = 0
         done = not self.is_running
         state = self.game.get_state(self.block_queue, self.main_board)
-        
+        self.current_steps = self.current_steps + 1
+
         if(self.current_steps >= self.max_steps):
             self.is_running = False
             return state, 0, True, {}
@@ -87,6 +88,7 @@ class BlockSudoku(gym.Env):
 
         # Calculate our new score. Calculate our reward too.
         new_score = self.game.clear_blocks_and_score(self.main_board)
+        new_score = new_score * 10 + 1
         self.total_score += new_score
         reward = new_score
 
@@ -499,12 +501,12 @@ class BlockSudokuGame:
 
     # Grab the current state
     def get_state(self, blocks, board):
-        state = np.zeros((15,15))
+        state = np.zeros((15,15,1))
         # Copy across board
-        state[:9,:9] = board[:9,:9]
+        state[:9,:9, 0] = board[:9,:9]
         for n in range(len(blocks)):
             x = n*5
-            state[x:x+blocks[n].shape[0], 10:10+blocks[n].shape[1]] = blocks[n]
+            state[x:x+blocks[n].shape[0], 10:10+blocks[n].shape[1], 0] = blocks[n]
         return state
 
     # Check to see if we have a game over state
