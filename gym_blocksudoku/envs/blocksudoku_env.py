@@ -37,12 +37,21 @@ class BlockSudoku(gym.Env):
             low=0, high=1, shape=(15, 15, 1), dtype=np.uint8
         )
 
+    # Expensive operation that gets all valid moves
+    def get_valid_action_space(self):
+        valid_action_space = np.zeros(3*9*9)
+        for n in range(len(self.block_queue)):
+            for x in range(9):
+                for y in range(9):
+                    valid_action_space[(n*81)+(x*9)+y] = self.game.check_if_valid_move(x, y, self.block_queue[n], self.main_board)
+        return valid_action_space
+
     # Returns state, reward, done, and {}
     def step(self, action):
         err_msg = "%r (%s) invalid" % (action, type(action))
         assert self.action_space.contains(action), err_msg
 
-        reward = 0
+        reward = -1
         done = not self.is_running
         state = self.game.get_state(self.block_queue, self.main_board)
         self.current_steps = self.current_steps + 1
@@ -70,28 +79,29 @@ class BlockSudoku(gym.Env):
         y_pos = rem - (x_pos*9)
         #print('action is ' + str(action) + ' which means queue_pos = ' + str(queue_pos) + ' x = ' + str(x_pos) + ' y = ' + str(y_pos))
 
-
         # Make sure we have that block in queue or punish the user.
         if(queue_pos >= len(self.block_queue)):
-            return state, -1, done, {}
+            print('invalid action (queue)')
+            return state, -5, done, {}
 
         selected_block = self.block_queue[queue_pos]
 
         # Make sure we can make that move or punish the user
         if(not self.game.check_if_valid_move(x_pos, y_pos, selected_block, self.main_board)):
-            return state, -1, done, {}
+            print('invalid action (position)')
+            return state, -5, done, {}
 
         # Commit the action to board
         if not self.game.place_block(x_pos, y_pos, selected_block, self.main_board):
             print('this error should never occur since move should always be valid at this point')
-            return state, -1, done, {}
+            return state, -10, done, {}
 
         # Calculate our new score. Calculate our reward too.
         new_score = self.game.clear_blocks_and_score(self.main_board)
         new_score = new_score * 10 + 1
         self.total_score += new_score
         reward = new_score
-
+        
         # Pop out queue position
         self.block_queue.pop(queue_pos)
 
@@ -104,6 +114,10 @@ class BlockSudoku(gym.Env):
 
         # Calculate our game over state
         done = self.game.check_game_over_state(self.block_queue, self.main_board)
+
+        # If done, return a large negative reward
+        if(done):
+            reward = -10
 
         # Return everything
         return state, reward, done, {}
